@@ -31,3 +31,46 @@ body:has(.ac-app){margin:0;background:#100b06}html:has(.ac-app){scroll-behavior:
 /* Keep every header action reachable on narrow phones. */
 @media(max-width:650px){.ac-breadcrumb{min-width:0;flex:1}.ac-breadcrumb strong{overflow:hidden;text-overflow:ellipsis}.ac-top-actions{flex-shrink:0;gap:0}.ac-top-actions .ac-icon,.ac-top-actions .ac-search-trigger{width:44px;min-width:44px;height:44px;justify-content:center}.ac-mobile-toggle{width:44px;min-width:44px;height:44px}.ac-top-actions .ac-profile{padding-left:2px}}
 @media(max-width:360px){.ac-breadcrumb strong{display:none}.ac-profile select{max-width:96px}}
+
+
+/* UX audit improvements: legibility, action feedback and safe photo cropping.
+   Keep the existing Amigos espresso/cream/gold visual identity. */
+.ac-sidebar nav>a,.ac-drawer-nav nav>a{font-size:13px}
+.ac-nav-label{font-size:11px}
+.ac-demo-bar,.ac-demo-bar>span:first-child{font-size:11px}
+.ac-demo-bar p{font-size:11px;line-height:1.45}
+.ac-page-head h1{font-size:clamp(32px,3.1vw,48px);line-height:1.06}
+.ac-page-head>div>p:not(.ac-eyebrow){font-size:14px;line-height:1.6}
+.ac-eyebrow{font-size:11px!important}
+.ac-metric>div{font-size:12px}.ac-metric>p{font-size:11px;line-height:1.5}
+.ac-table{font-size:13px;white-space:normal}
+.ac-table th{font-size:11px;font-weight:700;letter-spacing:.025em}
+.ac-table td strong{font-size:13px}.ac-table td small{font-size:11px}
+.ac-panel-head p,.ac-muted,.ac-info-banner{font-size:12px}
+.ac-panel h2{font-size:16px}
+.ac-button{font-size:12px!important}
+.ac-badge{font-size:11px}
+.ac-kitchen-ticket li{font-size:14px}
+.ac-toast.error{border:1px solid var(--ac-red);color:var(--ac-text);box-shadow:0 12px 32px #0004}
+.ac-toast.error>svg{color:var(--ac-red)}
+.ac-crop-box{background:var(--ac-elevated);border:1px solid var(--ac-line);border-radius:10px;padding:18px;display:grid;gap:12px}
+.ac-crop-box>strong{font-size:14px}.ac-crop-box p{font-size:12px;color:var(--ac-muted)}
+.ac-crop-box>img{width:min(100%,260px);height:260px;object-fit:cover;border-radius:10px;display:block;margin:0 auto;border:1px solid var(--ac-line)}
+.ac-crop-box>label{display:grid;gap:7px;font-size:12px}
+.ac-crop-box input[type=range]{width:100%;accent-color:var(--ac-gold);min-height:32px}
+.ac-crop-box>div{display:flex;gap:10px;flex-wrap:wrap}
+.ac-app a:focus-visible,.ac-app button:focus-visible,.ac-app input:focus-visible,.ac-app select:focus-visible{outline:2px solid var(--ac-gold);outline-offset:2px}
+@media(max-width:650px){
+ .ac-topbar{height:auto;min-height:64px}
+ .ac-demo-bar p{font-size:10px}
+ .ac-page-head h1{font-size:clamp(32px,9vw,42px)}
+ .ac-metric>strong{font-size:clamp(25px,6vw,33px);overflow-wrap:anywhere;white-space:normal}
+ .ac-metric>div{font-size:11px}
+ .ac-metric>p{font-size:11px;min-height:0}
+ .ac-table td strong,.ac-order-code{font-size:13px}
+ .ac-table td small{font-size:11px}
+ .ac-panel h2{font-size:15px}
+ .ac-profile select{font-size:12px}
+ .ac-profile small{font-size:10px}
+ .ac-crop-box>img{width:min(100%,220px);height:220px}
+}

@@ -13,7 +13,8 @@ export function transition(o,status,reason='',now=new Date().toISOString()){
 }
 export const currency = n => 'Rs '+Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
 export const dayKey = d => new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Karachi',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(d));
-export function inRange(orders,days,now=Date.now()){const keys=new Set(Array.from({length:days},(_,i)=>dayKey(now-i*86400000)));return orders.filter(o=>keys.has(dayKey(o.createdAt)));}
+export const reportingTimestamp=o=>finished(o)?(o.completedAt||o.statusChangedAt||o.createdAt):o.status==='cancelled'?(o.statusChangedAt||o.createdAt):o.createdAt;
+export function inRange(orders,days,now=Date.now()){const keys=new Set(Array.from({length:days},(_,i)=>dayKey(now-i*86400000)));return orders.filter(o=>keys.has(dayKey(reportingTimestamp(o))));}
 export function stats(orders){const complete=orders.filter(finished);const prep=complete.filter(o=>o.preparingAt&&o.readyAt).map(o=>(new Date(o.readyAt)-new Date(o.preparingAt))/60000);return {sales:complete.reduce((s,o)=>s+o.total,0),completed:complete.length,active:orders.filter(active).length,orders:orders.length,average:complete.length?complete.reduce((s,o)=>s+o.total,0)/complete.length:0,prep:prep.length?Math.round(prep.reduce((a,b)=>a+b,0)/prep.length):null,cancelled:orders.filter(o=>o.status==='cancelled').length};}
 export function sampleOrders(items,now=Date.now()){
  const names=['Alex Morgan','Sam Taylor','Jamie Parker','Robin Lee','Casey Brooks','Avery Quinn'];

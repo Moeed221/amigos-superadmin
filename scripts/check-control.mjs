@@ -19,6 +19,15 @@ assert.equal(m.allowedNext('kitchen',{status:'accepted'}),true);
 assert.equal(m.allowedNext('kitchen',{status:'ready'}),false);
 assert.equal(m.stats([order,pickup,{status:'cancelled',total:9999},{status:'placed',total:9999}]).sales,2000);
 assert.equal(m.dayKey('2026-11-06T20:00:00Z'),'2026-11-07');
+// Completed orders are attributed to the actual completion date, not order placement.
+const placedYesterdayCompletedToday={status:'delivered',createdAt:'2026-11-06T12:00:00Z',statusChangedAt:'2026-11-07T12:00:00Z',completedAt:'2026-11-07T12:00:00Z'};
+assert.equal(m.reportingTimestamp(placedYesterdayCompletedToday),'2026-11-07T12:00:00Z');
+assert.equal(m.inRange([placedYesterdayCompletedToday],1,new Date('2026-11-07T14:00:00Z').getTime()).length,1);
+assert.equal(m.inRange([placedYesterdayCompletedToday],1,new Date('2026-11-06T14:00:00Z').getTime()).length,0);
+const cancelledToday={status:'cancelled',createdAt:'2026-11-06T12:00:00Z',statusChangedAt:'2026-11-07T12:00:00Z'};
+assert.equal(m.inRange([cancelledToday],1,new Date('2026-11-07T14:00:00Z').getTime()).length,1);
+assert.equal(m.sampleOrders([{id:1,name:'Test',price:200,image:''}]).every(o=>o.source==='sample'),true);
+
 assert.equal(m.inRange([{createdAt:'2026-11-06T20:00:00Z'},{createdAt:'2026-11-06T18:00:00Z'}],1,new Date('2026-11-07T01:00:00Z').getTime()).length,1);
 assert.throws(()=>m.validateDish({name:'Test',price:-1,category:'taco',description:'Test'}),/greater/);
 assert.throws(()=>m.validateDeal({title:'Test',percent:101,scope:'all'}),/100/);
