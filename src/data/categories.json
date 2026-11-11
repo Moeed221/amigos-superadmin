@@ -1,0 +1,121 @@
+[
+  {
+    "slug": "burgers",
+    "name": "Burgers",
+    "tagline": "Beef and chicken burgers",
+    "image": "/assets/cat-burgers.jpg",
+    "order": 1
+  },
+  {
+    "slug": "pizza",
+    "name": "Pizza",
+    "tagline": "8, 11 and 13-inch pizzas",
+    "image": "/assets/cat-fastfood.jpg",
+    "order": 2
+  },
+  {
+    "slug": "sandwiches",
+    "name": "Sandwiches",
+    "tagline": "Panini and sandwiches",
+    "image": "/assets/cat-sandwiches.jpg",
+    "order": 3
+  },
+  {
+    "slug": "wraps",
+    "name": "Wraps & Shawarma",
+    "tagline": "Shawarma, wraps and paratha",
+    "image": "/assets/cat-mexican.jpg",
+    "order": 4
+  },
+  {
+    "slug": "bbq",
+    "name": "BBQ & Platters",
+    "tagline": "Grills and sharing platters",
+    "image": "/assets/cat-fastfood.jpg",
+    "order": 5
+  },
+  {
+    "slug": "appetizers",
+    "name": "Appetizers",
+    "tagline": "Wings, nuggets and crispy bites",
+    "image": "/assets/cat-sides.jpg",
+    "order": 6
+  },
+  {
+    "slug": "sides",
+    "name": "Fries & Sides",
+    "tagline": "Loaded fries and savoury sides",
+    "image": "/assets/cat-sides.jpg",
+    "order": 7
+  },
+  {
+    "slug": "fastfood",
+    "name": "Crispy Chicken",
+    "tagline": "Stuffed and crispy chicken",
+    "image": "/assets/cat-fastfood.jpg",
+    "order": 8
+  },
+  {
+    "slug": "pasta",
+    "name": "Pasta",
+    "tagline": "Alfredo, Mexican pasta and more",
+    "image": "/assets/cat-thai.jpg",
+    "order": 9
+  },
+  {
+    "slug": "steaks",
+    "name": "Steaks",
+    "tagline": "Chicken and beef steaks",
+    "image": "/assets/cat-fastfood.jpg",
+    "order": 10
+  },
+  {
+    "slug": "chinese",
+    "name": "Chinese, Rice & Seafood",
+    "tagline": "Rice, Chinese classics and seafood",
+    "image": "/assets/cat-thai.jpg",
+    "order": 11
+  },
+  {
+    "slug": "thai",
+    "name": "Thai Kitchen",
+    "tagline": "Thai kitchen specialties",
+    "image": "/assets/cat-thai.jpg",
+    "order": 12
+  },
+  {
+    "slug": "noodles",
+    "name": "Noodles",
+    "tagline": "Chow mein and wok dishes",
+    "image": "/assets/cat-thai.jpg",
+    "order": 13
+  },
+  {
+    "slug": "soups",
+    "name": "Soups",
+    "tagline": "Hot and hearty soups",
+    "image": "/assets/cat-thai.jpg",
+    "order": 14
+  },
+  {
+    "slug": "drinks",
+    "name": "Drinks, Shakes & Coffee",
+    "tagline": "Hot and chilled drinks",
+    "image": "/assets/cat-drinks.jpg",
+    "order": 15
+  },
+  {
+    "slug": "desserts",
+    "name": "Desserts & Ice Cream",
+    "tagline": "Sweet treats",
+    "image": "/assets/cat-desserts.jpg",
+    "order": 16
+  },
+  {
+    "slug": "deals",
+    "name": "Deals",
+    "tagline": "Fixed-price Amigos bundles",
+    "image": "/assets/cat-burgers.jpg",
+    "order": 17
+  }
+]

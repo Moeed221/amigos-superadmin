@@ -1,0 +1,8 @@
+# Deploy as a Render Static Site. No existing services are modified.
+services:
+  - type: web
+    name: amigos-superadmin-v2
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: out
+    autoDeployTrigger: commit

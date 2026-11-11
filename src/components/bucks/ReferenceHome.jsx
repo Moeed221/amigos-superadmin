@@ -1,0 +1,67 @@
+'use client';
+import Link from 'next/link';
+import {Fragment,useEffect,useRef,useState} from 'react';
+import Icon from '../Icons';
+import {useShop,money} from '../ShopProvider';
+import {categoryColors,featuredIds,initialMenu,menuCategories} from '../../data/restaurant-menu';
+import {Roll,Flourish,RevealText} from './Motion';
+import Character from './Character';
+import Community from './Community';
+import useSiteConfig from '../control/useSiteConfig';
+import DealGallery from './DealGallery';
+import {defaultConfig} from '../../lib/site-config';
+const fallback=initialMenu();
+export function useRestaurantMenu(){const shop=useShop();return shop.ready?shop.data.items:fallback}
+export function FoodCard({product:p,compact=false}){
+ const shop=useShop(),[added,setAdded]=useState(false),timer=useRef(null),deal=p.category==='deals';
+ useEffect(()=>()=>clearTimeout(timer.current),[]);
+ function add(){shop.addItem(p);setAdded(true);clearTimeout(timer.current);timer.current=setTimeout(()=>setAdded(false),1500)}
+ return <article className={'restaurant-card '+(compact?'compact':'')} style={{'--flavour':categoryColors[p.category]||'#ef8a43'}}>
+ <div className="food-card-top"><span>{menuCategories.find(c=>c.slug===p.category)?.name}</span>{p.offer&&<span>{p.offer.percent}% off</span>}</div>
+ <h3><Link href={deal?'/deals/#deal-'+p.id:'/product?id='+p.id}>{p.name}</Link></h3>
+ <Link className="restaurant-card-art" href={deal?'/deals/#deal-'+p.id:'/product?id='+p.id} aria-label={'Customise '+p.name}><img src={p.image} alt={p.name} loading="lazy"/></Link>
+ <p className="restaurant-card-description">{p.description}</p>
+ <div className="restaurant-card-actions">{deal?<Link className="ref-button" href={'/deals/#deal-'+p.id}>Choose this deal <span>{money(p.finalPrice)}</span></Link>:<button className="ref-button" onClick={add} disabled={!shop.ready} aria-label={'Add '+p.name+' to cart'}><Roll>{added?'Added':'Add to cart'}</Roll><span>{added?<Icon name="check" size={20}/>:money(p.finalPrice)}</span></button>}<Link className="food-customise" href={deal?'/deals/#deal-'+p.id:'/product?id='+p.id}><Roll>{deal?'Choose bundle options':'Customise your meal'}</Roll><Icon name="arrow" size={18}/></Link></div>
+ </article>
+}
+export function FoodGrid({items}){return <div className="restaurant-grid">{items.map(p=><FoodCard product={p} key={p.id}/>)}</div>}
+export function MealBuilder(){
+ const items=useRestaurantMenu(),shop=useShop(),[choices,setChoices]=useState([null,null,null]),[added,setAdded]=useState(false);
+ const groups=[{name:'Your main',items:items.filter(i=>['burgers','mexican','sandwiches','fastfood'].includes(i.category))},{name:'Your side',items:items.filter(i=>i.category==='sides')},{name:'Your drink',items:items.filter(i=>i.category==='drinks')}];
+ const selected=choices.map((id,index)=>items.find(i=>i.id===id)||groups[index].items[0]),total=selected.reduce((n,i)=>n+(i?.finalPrice||0),0);
+ function add(){if(selected.some(i=>!i))return;shop.addItem(selected[0],1,'',selected.slice(1).map(i=>i.id));setAdded(true)}
+ return <section className="bundle-panel restaurant-meal" id="build-meal"><div className="bundle-copy"><p className="eyebrow">Make it yours</p><h2 data-reveal>Build your<br/><span className="outline-type">perfect</span><br/>meal.</h2><div className="meal-choices">{groups.map((group,index)=><label key={group.name}><span><b>0{index+1}</b>{group.name}</span><select value={selected[index]?.id||""} onChange={e=>{setAdded(false);setChoices(v=>v.map((id,i)=>i===index?Number(e.target.value):id))}}>{group.items.map(i=><option value={i.id} key={i.id}>{i.name} · {money(i.finalPrice)}</option>)}</select></label>)}</div></div><div className="meal-selection"><div className="meal-disc"/><div className="meal-foods">{selected.map((p,i)=><div className={'meal-food meal-food-'+i} key={i}>{p&&<img key={p.id} src={p.image} alt={p.name}/>}</div>)}</div><p className="meal-help">One main. One side. One drink.<br/>All three added separately, ready to customise.</p><button className="ref-button meal-add" disabled={!shop.ready||selected.some(i=>!i)} onClick={add}><Roll>{added?'Meal added':'Add my meal'}</Roll><span>{money(total)}</span></button>{added&&<Link href="/cart" className="meal-view">View your cart <Icon name="arrow" size={17}/></Link>}</div></section>
+}
+function Hero(){
+ const config=useSiteConfig();
+ const items=useRestaurantMenu(),products=config.featuredIds.map(id=>items.find(p=>p.id===id)).filter(Boolean);
+ const [current,setCurrent]=useState(0),p=products[current]||products[0],start=useRef(null);
+ function change(delta){setCurrent(n=>(n+delta+products.length)%products.length)}
+ if(!p)return null;
+ return <section className="reference-hero restaurant-hero" data-hero-scene><h1 data-hero-heading>{config.copy.heroHeadline===defaultConfig.copy.heroHeadline?<><span className="outline-type">The fast food</span> that<br/>turns hungry into<br/>happy.</>:config.copy.heroHeadline}</h1><div className="hero-stage food-stage" style={{'--flavour':categoryColors[p.category]}} onKeyDown={e=>{if(e.target.closest('button')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();change(e.key==='ArrowLeft'?-1:1)}}} onTouchStart={e=>{start.current={x:e.touches[0].clientX,y:e.touches[0].clientY}}} onTouchEnd={e=>{if(!start.current)return;const dx=e.changedTouches[0].clientX-start.current.x,dy=e.changedTouches[0].clientY-start.current.y;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)change(dx<0?1:-1);start.current=null}}>
+ <div className="hero-meta"><span>Fresh off the grill · 0{current+1}/0{products.length}</span><strong aria-live="polite">{p.name}</strong></div>
+ <div className="hero-food-window"><div className="hero-food-disc"/>{products.map((item,i)=>{let offset=(i-current+products.length)%products.length;if(offset>products.length/2)offset-=products.length;return <div key={item.id} className={'food-orbit '+(i===current?'active':'')} aria-hidden={i!==current} style={{'--slide-position':offset}}><div className="food-motion"><img className="hero-food-main" src={item.image} alt={item.name}/><img className="food-garnish garnish-one" src="/bucks/asset-26.webp" alt=""/><img className="food-garnish garnish-two" src="/bucks/asset-22.webp" alt=""/><span className="food-price-stamp">{money(item.finalPrice)}</span></div></div>})}</div>
+ <div className="hero-controls"><button aria-label="Previous dish" onClick={()=>change(-1)}><Icon name="back" size={26}/></button><button aria-label="Next dish" onClick={()=>change(1)}><Icon name="arrow" size={26}/></button></div>
+ <div className="hero-bottom"><div className="hero-pagination" aria-label="Featured dishes">{products.map((item,i)=><button key={item.id} onClick={()=>setCurrent(i)} aria-label={'Show '+item.name} aria-pressed={i===current} className={i===current?'active':''}/>)}</div><Link className="ref-button hero-order" href={'/product?id='+p.id}><Roll>Order this favourite</Roll><Icon name="arrow"/></Link><Link className="hero-full-menu" href="/shop"><Roll>Explore full menu</Roll><Icon name="arrow" size={18}/></Link></div>
+ </div></section>
+}
+const benefits=[['Stacked burgers','burgers','Big stacks, bold fillings. Choose your burger, add your extras and make it your own.','food'],['Pizza favourites','pizza','Birria tacos, burritos and nachos. Bring your appetite and find your favourite.','food'],['A meal your way','sides','Add fries, a drink and a little extra. Your cart keeps every choice easy to change.','check'],['Delivery or pickup',null,'Choose how you get your meal, check out as a guest and follow your order from the kitchen.','truck']];
+function Ingredients(){const config=useSiteConfig();return <section className="ingredient-story restaurant-story"><p className="statement"><RevealText>{config.copy.storyText}</RevealText> <svg className="splash" viewBox="0 0 50 50" aria-hidden="true"><path d="M25 0 30 17 46 8 36 23 50 29 32 32 29 50 22 35 6 44 15 29 0 23 18 19Z" fill="currentColor"/></svg></p>
+ <div className="restaurant-stack" data-card-stack><div className="stack-sticky"><div className="floating-produce" aria-hidden="true">{[22,24,26,28].map((n,i)=><img key={n} className={'stack-produce stack-produce-'+i} src={'/bucks/asset-'+n+'.webp'} data-parallax={i%2?.16:-.12} alt=""/>)}</div><div className="stack-cards">{benefits.map(([title,category,desc,icon],i)=><article className="restaurant-benefit" data-stack-card key={title} style={{'--card-index':i,'--card-tilt':[0,-6,5,-2][i]+'deg'}}><h2><i/>{title}<i/></h2><div><Icon name={icon} size={72}/><p>{desc}</p><Link href={category?'/shop?category='+category:'/location'} className="benefit-link">{category?'Explore '+title.toLowerCase():'Choose delivery or pickup'}<Icon name="arrow" size={18}/></Link></div></article>)}</div><div className="stack-counter" aria-hidden="true">Good food. Good company.</div></div></div></section>}
+export function WhyAmigos(){
+ const config=useSiteConfig();
+ const [current,setCurrent]=useState(0),[mobile,setMobile]=useState(false);
+ useEffect(()=>{const mq=matchMedia('(max-width:800px)');const update=()=>setMobile(mq.matches);update();mq.addEventListener('change',update);return()=>mq.removeEventListener('change',update)},[]);
+ const points=[['Your kind of food','Burgers, Mexican favourites, Thai dishes and crispy classics. Keep everyone at the table happy.'],['Your kind of meal','Choose a main, add a side and a drink, and leave your kitchen instructions on the item page.'],['Your kind of order','Delivery or pickup. A clear cart, guest checkout and one place to follow your order.']];
+ return <section className="restaurant-why" data-reasons><div className="reasons-sticky"><h2 data-reveal>{config.copy.whyHeading}</h2><div className="reasons-stage">{points.map(([title,text],i)=><article className="restaurant-reason" data-reason key={title} style={mobile?{'--reason-x':(i-current)*110+'vw','--reason-y':Math.abs(i-current)*60+'px','--reason-turn':(i-current)*15+'deg','--reason-opacity':i===current?1:0}:undefined}><span className="reason-number">0{i+1}</span><h3>{title}</h3><p>{text}</p></article>)}</div><div className="reasons-controls"><button aria-label="Previous reason" onClick={()=>setCurrent(n=>(n+2)%3)}><Icon name="back"/></button><output aria-live="polite">0{current+1} / 03</output><button aria-label="Next reason" onClick={()=>setCurrent(n=>(n+1)%3)}><Icon name="arrow"/></button></div><Character className="reasons-decoration onion" src="/bucks/asset-53.webp" expression="sweating"/><Character className="reasons-decoration garlic" src="/bucks/asset-54.webp" expression="grinning"/></div></section>
+}
+export default function ReferenceHome(){
+ const items=useRestaurantMenu(),config=useSiteConfig();
+ const sections={
+  hero:<Hero/>,story:<Ingredients/>,
+  featured:<section className="choose-section" id="favourites"><Flourish/><h2 className="choose-title" data-reveal>{config.copy.featuredHeading}</h2><FoodGrid items={config.featuredIds.map(id=>items.find(i=>i.id===id)).filter(Boolean)}/><Link href="/shop" className="ref-button full-menu-link"><Roll>Explore the full menu</Roll><Icon name="arrow"/></Link></section>,
+  deals:<DealGallery featured/>,mealBuilder:<MealBuilder/>,why:<WhyAmigos/>,carousel:<Community/>
+ };
+ const order=[...new Set([...(config.sectionOrder||defaultConfig.sectionOrder),...defaultConfig.sectionOrder])];
+ return <>{order.map(key=>config.sections[key]!==false&&sections[key]?<Fragment key={key}>{sections[key]}</Fragment>:null)}</>;
+}
